@@ -34,10 +34,15 @@
     "react-dropzone": "^14.2.9",
     "react-hot-toast": "^2.4.1",
     "react-twc": "^1.4.2",
+    "sass": "^1.79.5",
+    "supports-color": "8.1.1",
     "tailwindcss": "3.4.13",
     "typescript": "5.6.3",
     "uuid": "^10.0.0",
     "voy-search": "^0.6.3",
     "zustand": "^5.0.0-rc.2"
+  },
+  "devDependencies": {
+    "daisyui": "^4.12.13"
   }
 }

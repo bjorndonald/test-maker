@@ -16,6 +16,8 @@ const UploadPdf = () => {
     const selectedPDF = useAppStore(s => s.selectedPdf)
     const updatePDFInfo = useAppStore(s => s.updatePDFInfo)
     const [embedding, setEmbedding] = useState(false)
+    const currentId = useAppStore(s => s.currentId)
+    const [analyzing, setAnalyzing] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
     const [uploadError, setUploadError] = useState<string | null>(null)
     // const [selectedPDF, setSelectedPDF] = useState<File | null>(null)
@@ -45,41 +47,38 @@ const UploadPdf = () => {
         multiple: false
     })
 
-    async function embedPDF() {
+    async function analyzePDF() {
         try {
+            if (analyzing) return
             if (selectedPDF === null) {
-                toast.error(`You must select a file to embed.`);
+                toast.error(`You must select a file to analyze.`);
                 return;
             }
-            setEmbedding(true);
+            setUploadError('')
+            setAnalyzing(true);
             // setLoading(true)
             const formData = new FormData()
             formData.append("file", selectedPDF)
-            formData.append("type", "document")
-            formData.append("project", params.id as string)
-            const res = await axios.post("/api/embed", formData)
-            console.log(res.data)
-
-            toast.success("Embedding finished")
-            updatePDFInfo(res.data.id, res.data.numberOfPages, res.data.blobs)
-            setEmbedding(false)
+            const res = await axios.post("/api/analyze", formData)
+            
+            toast.success("Upload finished")
+            updatePDFInfo(res.data.id, res.data.numberOfPages, res.data.pdfs)
+            setAnalyzing(false)
             // selectDocument(res.data.doc)
             // toast(`Embedding finished`, {
             //     theme: "dark",
             // });
             // handleClose()
         } catch (error) {
-            setEmbedding(false)
+            setAnalyzing(false)
             toast.error(`Embedding error`);
             setUploadError('Embedding error')
         }
     }
 
-
-
     return (
         <div >
-            <div className=" sm:max-w-[425px] bg-base-100">
+            <div className=" flex flex-col items-center gap-10 sm:max-w-[425px] bg-base-100">
                 <div>
                     <h1 className='text-4xl'>Upload PDF</h1>
                 </div>
@@ -126,9 +125,10 @@ const UploadPdf = () => {
                     </div>
                 )}
                 <div className="flex justify-end space-x-2">
-                    {!!selectedPDF && <Button onClick={embedPDF} disabled={!selectedPDF || uploadProgress < 100}>
-                        {uploadProgress < 100 ? 'Uploading...' : embedding ? "Embedding..." : "Embed"}
+                    {!!selectedPDF && !currentId && <Button onClick={analyzePDF} disabled={!selectedPDF || uploadProgress < 100}>
+                        {uploadProgress < 100 ? 'Uploading...' : analyzing ? "Analyzing..." : "Analyze"}
                     </Button>}
+                    
                 </div>
             </div>
         </div>

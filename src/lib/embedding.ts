@@ -5,4 +5,6 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 //     apiKey: process.env.HUGGING_FACE_API,
 // })
 
-export const embeddings = new OpenAIEmbeddings()
+export const embeddings = new OpenAIEmbeddings({
+    model: "text-embedding-3-small",
+})
