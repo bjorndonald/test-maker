@@ -63,8 +63,10 @@ const Generate = () => {
 
   const submitAnswer = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const formData = (e.target as any)?.elements
-  
+    const formData = new FormData(e.target as HTMLFormElement); 
+
+    const formValues = Object.fromEntries(formData.entries());
+    
     return false
   }
 
