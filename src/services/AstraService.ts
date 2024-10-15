@@ -29,7 +29,8 @@ export class CustomRetriever extends BaseRetriever {
         const cursor = await this.collection.find(filter ?? {}, {
             // sort: {  $vector: query },
             // sort: {$vectorize: query},
-            // limit: k,
+            limit: k,
+            
             includeSimilarity: true,
         });
 

@@ -5,6 +5,7 @@ interface AppState {
     currentId: string
     numberOfPages: number
     pdfs: string[]
+    tags: string[],
     start: number
     stop: number
     canGenerate: boolean
@@ -13,6 +14,7 @@ interface AppState {
     setStart: (num: number) => void
     setStop: (num: number) => void
     updatePDFInfo: (id: string, pages: number, pdfs: string[]) => void
+    updateEmbedInfo: (tags: string[]) => void
     selectPDF: (file: File) => void
     reset: () => void
 }
@@ -24,12 +26,16 @@ const useAppStore = create<AppState>(set => ({
     start: 0,
     stop: 0,
     pdfs: [],
+    tags: [],
     canGenerate: false,
     setStart(num) {
         set({ start: num })
     },
     setStop(num) {
         set({ stop: num })
+    },
+    updateEmbedInfo(tags) {
+        set({tags})
     },
     updatePDFInfo(id, pages, pdfs) {
         set({ currentId: id, numberOfPages: pages, pdfs })

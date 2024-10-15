@@ -11,3 +11,5 @@ Anything between the following \`context\` html blocks is retrieved from a knowl
 
 Also generate a correct answer to the question. Do not repeat text. Please make sure the response is in the format of an array of objects with a question property and answer property. Please only return the formatted response nothing else.
 `;
+
+export const RESPONSE_TAGS_SYSTEM_TEMPLATE = `You are an experienced editor, expert at summarizing into ten tags. These tags should not be more than two words. Using the provided text, generate a title for the user's input based solely on the information. You must only use information from the provided search results. Use an unbiased and journalistic tone. Please just return the array of tags without anything else.`

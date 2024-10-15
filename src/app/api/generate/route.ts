@@ -10,15 +10,30 @@ import { StructuredOutputParser } from "@langchain/core/output_parsers";
 import { BaseRetrieverInterface } from "@langchain/core/retrievers";
 import AstraDBService from "@/services/AstraDBService";
 import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";
+import { z } from "zod";
 
-async function generateRAGResponse(id: string, numOfQuestions: number) {
+async function generateRAGResponse(id: string, tags: string[], numOfQuestions: number) {
     const chatModel = getChatModel(OPENAI_MODEL)
     const dbService = await AstraService.from(id)
-
-    const parser = StructuredOutputParser.fromNamesAndDescriptions({
-        question: "generated question",
-        answer: "correct answer to the question",
-    });
+    
+    
+    // const parser = StructuredOutputParser.fromNamesAndDescriptions({
+    //     question: "generated question",
+    //     answer: "correct answer to the question",
+    // });
+    const schema = z.object({
+        questions: z.array(z.object({
+            question: z.string(),
+            answer: z.string(),
+        }))
+    })
+    type Res = z.infer<typeof schema>
+    const parser = StructuredOutputParser.fromZodSchema(z.object({
+        questions: z.array(z.object({
+            question: z.string(),
+            answer: z.string(),
+        }))
+    }))
     const prompt = ChatPromptTemplate.fromMessages([
         [
             "system",
@@ -44,10 +59,6 @@ async function generateRAGResponse(id: string, numOfQuestions: number) {
         rephrasePrompt: historyAwarePrompt,
     });
 
-    // const retriever = await dbService.getRetriever()
-    // const results = await retriever.invoke("people")
-    // console.log(results)
-
     const retrievalChain = await createRetrievalChain({
         combineDocsChain: documentChain,
         retriever: historyAwareRetrieverChain,
@@ -57,24 +68,27 @@ async function generateRAGResponse(id: string, numOfQuestions: number) {
 
     const response = await fullChain.invoke(
         {
-            input: `people`,
+            input: `Please give me questions on these subjects from the provided context ${tags.reduce((a,b)=> a+", "+b, "")}`,
             chat_history: [],
             format_instructions: parser.getFormatInstructions(),
         });
     console.log(response)
-    //     const questions = JSON.parse(response.replaceAll("```","").replaceAll("json", ""))
-    // console.log(questions)
+    const formattedRes = response.replaceAll("```json", "").replaceAll("```", "")
+        // const questions = JSON.parse(response.replaceAll("```","").replaceAll("json", ""))
+    console.log(formattedRes)
+    const responseObj = JSON.parse(formattedRes) as Res
+    console.log(responseObj)
+    return responseObj.questions
 }
 
 export const POST = async (req: NextRequest) => {
-    const { id,  numOfQuestions } = await req.json()
+    const { id, tags, numOfQuestions } = await req.json()
 
     try {
-        const response = await generateRAGResponse(id, numOfQuestions)
+        const results = await generateRAGResponse(id, tags, numOfQuestions)
 
-        return NextResponse.json({}, { status: 200 })
+        return NextResponse.json({ results }, { status: 200 })
     } catch (error) {
-      console.log(error)
-        return NextResponse.json(error, { status: 500 })
+       return NextResponse.json(error, { status: 500 })
     }
 }

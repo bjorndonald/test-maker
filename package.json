@@ -40,6 +40,7 @@
     "typescript": "5.6.3",
     "uuid": "^10.0.0",
     "voy-search": "^0.6.3",
+    "zod": "^3.23.8",
     "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
