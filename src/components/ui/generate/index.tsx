@@ -6,6 +6,7 @@ import { File } from 'lucide-react';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 import { cx } from 'react-twc';
+import $ from 'jquery'
 
 interface Question {
   question: string
@@ -64,9 +65,32 @@ const Generate = () => {
   const submitAnswer = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement); 
+    $(".status").remove()
 
     const formValues = Object.fromEntries(formData.entries());
-    
+    questions.map(async (x, i) => {
+      const value = formValues[i]
+      const res = await axios.post("/api/answer", {
+        answer: value,
+        correctAnswer: x.answer
+      })
+
+      const mark = res.data.mark as {
+        correctness: number,
+        correct: boolean
+      }
+
+      console.log(mark)
+
+      const questionElem = document.getElementById(`question${i}`) as HTMLDivElement
+      var span = document.createElement("span")
+      span.className = mark.correct ? "status text-green-600" : "status text-red-600"
+      questionElem.append(span)
+
+      span = document.createElement("span")
+      span.textContent = mark.correctness+""
+      questionElem.append(span)
+    })
     return false
   }
 
@@ -104,10 +128,10 @@ const Generate = () => {
           {generating ? "Generating...": "Generate"}
         </Button>
       </div>
-      {!!questions.length && <form onSubmit={submitAnswer} className="flex px-4 max-w-5xl mx-auto items-center flex-col gap-10">
+      {!!questions.length && <form id='questions-form' onSubmit={submitAnswer} className="flex px-4 max-w-5xl mx-auto items-center flex-col gap-10">
         <div className="flex flex-col gap-4">
           {questions.map((x, i) => (
-            <div key={i} className="flex flex-col gap-3">
+            <div id={`question${i}`} key={i} className="flex flex-col gap-3">
               <label htmlFor={`${i}`}>
                 {x.question}
               </label>

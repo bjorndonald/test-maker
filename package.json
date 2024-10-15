@@ -23,6 +23,7 @@
     "axios": "^1.7.7",
     "bun": "^1.1.30",
     "class-variance-authority": "^0.7.0",
+    "jquery": "^3.7.1",
     "langchain": "^0.3.2",
     "lucide-react": "^0.452.0",
     "next": "14.2.15",
@@ -43,6 +44,7 @@
     "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.31",
     "daisyui": "^4.12.13"
   }
 }
