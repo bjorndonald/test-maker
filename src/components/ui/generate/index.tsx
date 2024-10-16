@@ -75,7 +75,7 @@ const Generate = () => {
         correctAnswer: x.answer
       })
 
-      const mark = res.data.mark as {
+      const mark = res.data.mark.answer as {
         correctness: number,
         correct: boolean
       }
@@ -85,10 +85,12 @@ const Generate = () => {
       const questionElem = document.getElementById(`question${i}`) as HTMLDivElement
       var span = document.createElement("span")
       span.className = mark.correct ? "status text-green-600" : "status text-red-600"
+      span.textContent = mark.correct ?  "Correct": "Wrong"
       questionElem.append(span)
 
       span = document.createElement("span")
-      span.textContent = mark.correctness+""
+      span.className = mark.correct ? "status text-green-600" : "status text-red-600"
+      span.textContent ="Correctness of ten: "+ mark.correctness+""
       questionElem.append(span)
     })
     return false
@@ -135,12 +137,12 @@ const Generate = () => {
               <label htmlFor={`${i}`}>
                 {x.question}
               </label>
-              <input placeholder='Answer here' className='input input-ghost' id={`${i}`} name={`${i}`} type="text" />
+              <input placeholder='Answer here' className='input input-bordered' id={`${i}`} name={`${i}`} type="text" />
             </div>
           ))}
         </div>
         <Button type='submit'>
-          Answer
+          Check Answer
         </Button>
       </form>}
        

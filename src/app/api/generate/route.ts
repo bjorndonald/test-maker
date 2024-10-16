@@ -7,8 +7,6 @@ import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { createRetrievalChain } from "langchain/chains/retrieval";
 import AstraService from "@/services/AstraService";
 import { StructuredOutputParser } from "@langchain/core/output_parsers";
-import { BaseRetrieverInterface } from "@langchain/core/retrievers";
-import AstraDBService from "@/services/AstraDBService";
 import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";
 import { z } from "zod";
 
@@ -28,12 +26,7 @@ async function generateRAGResponse(id: string, tags: string[], numOfQuestions: n
         }))
     })
     type Res = z.infer<typeof schema>
-    const parser = StructuredOutputParser.fromZodSchema(z.object({
-        questions: z.array(z.object({
-            question: z.string(),
-            answer: z.string(),
-        }))
-    }))
+    const parser = StructuredOutputParser.fromZodSchema(schema)
     const prompt = ChatPromptTemplate.fromMessages([
         [
             "system",

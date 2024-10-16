@@ -68,7 +68,7 @@ const DisplayPages = () => {
     return !!currentId && (
         <div className='flex flex-col items-center'>
             <h1 className='text-4xl mb-3'>Pages of Document</h1>
-
+            <p>Pick the start and stop of the pages you wanna embed</p>
             <div className="flex gap-3 mb-6 items-center justify-center">
                 <input value={start} onChange={e => setStart(+e.target.value)} className='w-12 border outline-none ring-0 border-base-300' type="number" />
                 <span>to</span>
